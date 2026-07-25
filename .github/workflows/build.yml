@@ -216,7 +216,7 @@ jobs:
                 --lto=thin \
                 --defconfig_fragment=${DEFCONFIG_FRAG} \
                 ${VIRT_TARGET} \
-                -- --dist_dir=dist_virt || echo "WARNING: Virtual device modules build failed"
+                -- --dist_dir=dist_virt
             fi
           fi
 
@@ -258,13 +258,15 @@ jobs:
               BAZEL_OUT="$GITHUB_WORKSPACE/kernel/bazel-bin/common/kernel_aarch64"
               cp "$BAZEL_OUT/Image" "$OUT_DIR/" 2>/dev/null || true
             fi
-            # Bazel virtual device dist
-            VIRT_DIST="$GITHUB_WORKSPACE/kernel/dist_virt"
-            if [ -d "$VIRT_DIST" ]; then
-              cp "$VIRT_DIST"/*.ko "$OUT_DIR/modules/" 2>/dev/null || true
-              cp "$VIRT_DIST"/modules.* "$OUT_DIR/modules/" 2>/dev/null || true
-              cp "$VIRT_DIST"/system_dlkm* "$OUT_DIR/" 2>/dev/null || true
-            fi
+          fi
+
+          # Bazel virtual-device dist is generated independently of the
+          # kernel Image; collect it even when the Image fallback succeeded.
+          VIRT_DIST="$GITHUB_WORKSPACE/kernel/dist_virt"
+          if [ -d "$VIRT_DIST" ]; then
+            cp "$VIRT_DIST"/*.ko "$OUT_DIR/modules/" 2>/dev/null || true
+            cp "$VIRT_DIST"/modules.* "$OUT_DIR/modules/" 2>/dev/null || true
+            cp "$VIRT_DIST"/system_dlkm* "$OUT_DIR/" 2>/dev/null || true
           fi
 
           # 3. Create initramfs with matching modules for AVD use

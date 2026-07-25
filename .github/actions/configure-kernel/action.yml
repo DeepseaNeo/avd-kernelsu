@@ -49,7 +49,7 @@ runs:
             # 虛擬裝置周邊 driver 不寫入此 fragment，讓 virtual-device target
             # 依自身 module_outs 產出匹配 .ko，避免 GKI Bazel target 拒絕未列出的 module。
             case "$cfg" in
-              CONFIG_VIRTIO|CONFIG_VIRTIO_MMIO|CONFIG_VIRTIO_PCI_LEGACY|CONFIG_VIRTIO_VSOCKETS_COMMON|CONFIG_GOLDFISH|CONFIG_GOLDFISH_PIPE|CONFIG_GOLDFISH_ADDRESS_SPACE|CONFIG_DM_VERITY|CONFIG_EROFS_FS)
+              CONFIG_VIRTIO|CONFIG_VIRTIO_PCI_LEGACY|CONFIG_VIRTIO_VSOCKETS_COMMON|CONFIG_GOLDFISH|CONFIG_GOLDFISH_PIPE|CONFIG_GOLDFISH_ADDRESS_SPACE|CONFIG_DM_VERITY|CONFIG_EROFS_FS)
                 echo "${cfg}=y" >> "$FRAG"
                 echo "  Added built-in: ${cfg}=y" ;;
               *)
