@@ -45,16 +45,16 @@ runs:
           # Strip CONFIG_ prefix to get Kconfig symbol name
           SYM="${cfg#CONFIG_}"
           if grep -rq "^config $SYM$" "$KERNEL_SRC" 2>/dev/null; then
-            # 核心與 rootfs 路徑維持 built-in；virtio peripheral drivers
-            # 需要產出 .ko，供 AVD ramdisk 以匹配版本載入。
+            # GKI target 僅固定 core/rootfs 與 bool dependencies 為 built-in。
+            # 虛擬裝置周邊 driver 不寫入此 fragment，讓 virtual-device target
+            # 依自身 module_outs 產出匹配 .ko，避免 GKI Bazel target 拒絕未列出的 module。
             case "$cfg" in
               CONFIG_VIRTIO|CONFIG_VIRTIO_MMIO|CONFIG_VIRTIO_PCI_LEGACY|CONFIG_VIRTIO_VSOCKETS_COMMON|CONFIG_GOLDFISH|CONFIG_GOLDFISH_PIPE|CONFIG_GOLDFISH_ADDRESS_SPACE|CONFIG_DM_VERITY|CONFIG_EROFS_FS)
-                value=y ;;
+                echo "${cfg}=y" >> "$FRAG"
+                echo "  Added built-in: ${cfg}=y" ;;
               *)
-                value=m ;;
+                echo "  Deferred to virtual-device modules: ${cfg}" ;;
             esac
-            echo "${cfg}=${value}" >> "$FRAG"
-            echo "  Added: ${cfg}=${value}"
           else
             echo "  Skipped (not in Kconfig): ${cfg}"
           fi
